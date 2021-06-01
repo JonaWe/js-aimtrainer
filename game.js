@@ -3,6 +3,8 @@ class Game {
     this.canvas = document.querySelector('#game-canvas');
     this.ctx = this.canvas.getContext('2d');
 
+    this.aspectRatio = 3 / 2;
+
     window.addEventListener('resize', () => this.resizeCanvas(), false);
     this.resizeCanvas();
 
@@ -15,8 +17,14 @@ class Game {
   }
 
   resizeCanvas() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    this.canvas.height = this.aspectRatio
+      ? Math.min(windowHeight, windowWidth * (1 / this.aspectRatio))
+      : windowHeight;
+    this.canvas.width = this.aspectRatio
+      ? Math.min(windowWidth, windowHeight * this.aspectRatio)
+      : windowWidth;
   }
 
   drawBG() {
@@ -26,7 +34,7 @@ class Game {
 
   draw() {
     this.drawBG();
-    this.helper.drawCircle(200, 200, 30, 'red');
+    this.helper.drawCircle(0.25, 0.5, 0.1, 'red');
   }
 
   gameLoop(timeStamp) {
@@ -59,7 +67,13 @@ class Helper {
 
   drawCircle(x, y, radius, color) {
     this.ctx.beginPath();
-    this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    this.ctx.arc(
+      x * this.ctx.canvas.width,
+      y * this.ctx.canvas.height,
+      radius * this.ctx.canvas.height,
+      0,
+      2 * Math.PI
+    );
     this.ctx.fillStyle = color;
     this.ctx.fill();
   }
