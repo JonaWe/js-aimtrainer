@@ -1,51 +1,68 @@
-const canvas = document.querySelector('#game-canvas');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+class Game {
+  constructor() {
+    this.canvas = document.querySelector('#game-canvas');
+    this.ctx = this.canvas.getContext('2d');
 
-const ctx = canvas.getContext('2d');
+    window.addEventListener('resize', () => this.resizeCanvas(), false);
+    this.resizeCanvas();
 
-window.addEventListener('resize', resizeCanvas, false);
+    this.helper = new Helper(this.ctx);
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-function drawCircle(x, y, radius, color) {
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  ctx.fillStyle = color;
-  ctx.fill();
-}
-
-function draw(ctx) {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-  drawCircle(200, 500, 50, 'red');
-}
-
-let secondsPassed;
-let oldTimeStamp = 0;
-let frames = 0;
-let fps = 0;
-
-window.requestAnimationFrame(gameLoop);
-
-function gameLoop(timeStamp) {
-  draw(ctx);
-  secondsPassed = (timeStamp - oldTimeStamp) / 1000;
-  frames++;
-  if (secondsPassed >= 1) {
-    oldTimeStamp = timeStamp;
-
-    fps = Math.round((1 / secondsPassed) * frames);
-    frames = 0;
+    window.requestAnimationFrame((t) => this.gameLoop(t));
+    this.lastFPSDrawingTimeStamp = 0;
+    this.framesRenderedSinceLastFPSUpdate = 0;
+    this.fps = 0;
   }
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, 145, 43);
-  ctx.font = '25px Arial';
-  ctx.fillStyle = 'black';
-  ctx.fillText('FPS: ' + fps, 10, 30);
-  window.requestAnimationFrame(gameLoop);
+
+  resizeCanvas() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
+
+  drawBG() {
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  }
+
+  draw() {
+    this.drawBG();
+    this.helper.drawCircle(200, 200, 30, 'red');
+  }
+
+  gameLoop(timeStamp) {
+    this.draw();
+    this.drawFPS(timeStamp);
+    window.requestAnimationFrame((t) => this.gameLoop(t));
+  }
+
+  drawFPS(timeStamp) {
+    const secondsPassed = (timeStamp - this.lastFPSDrawingTimeStamp) / 1000;
+    this.framesRenderedSinceLastFPSUpdate++;
+    if (secondsPassed >= 1) {
+      this.lastFPSDrawingTimeStamp = timeStamp;
+
+      this.fps = Math.round(
+        (1 / secondsPassed) * this.framesRenderedSinceLastFPSUpdate
+      );
+      this.framesRenderedSinceLastFPSUpdate = 0;
+    }
+    this.ctx.font = '25px Arial';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('FPS: ' + this.fps, 10, 30);
+  }
 }
+
+class Helper {
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  drawCircle(x, y, radius, color) {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    this.ctx.fillStyle = color;
+    this.ctx.fill();
+  }
+}
+
+const game = new Game();
