@@ -85,6 +85,7 @@ class Game {
     }
 
     if (circleToRemove !== undefined) this.circles.splice(circleToRemove, 1);
+    else this.score -= 5;
   }
 
   drawBG() {
