@@ -85,7 +85,9 @@ class Game {
           this.ctx,
           Game.getRandomPosition(),
           Game.getRandomPosition(),
-          () => (this.gameOver = true)
+          () => {
+            this.gameOver = true;
+          }
         )
       );
       this.timeSinceLastCircleSpawn -= (1 / this.cps) * 1000;
