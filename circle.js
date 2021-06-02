@@ -8,7 +8,7 @@ export default class Circle {
     this.maxSize = 7.5;
     const colorRange = 30;
     this.color = {
-      hue: 360 - colorRange / 2 + Math.random() * colorRange,
+      hue: 120,
       saturation: 30,
       lightness: 50,
     };
@@ -47,9 +47,9 @@ export default class Circle {
       this.y,
       this.size,
       Circle.createHSL(
-        this.color.hue,
+        this.color.hue - this.size * (120 / this.maxSize),
         this.color.saturation +
-          this.size * ((100 - this.color.saturation) / this.maxSize),
+          this.size * ((80 - this.color.saturation) / this.maxSize),
         this.color.lightness
       )
     );
@@ -68,8 +68,6 @@ export default class Circle {
     if (this.size < this.maxSize)
       this.size = Math.min(this.size + delta * 0.0025, this.maxSize);
     else {
-      this.color.hue = 180;
-      this.color.lightness = 35;
       this.gameOver();
     }
   }
