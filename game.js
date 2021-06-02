@@ -87,9 +87,18 @@ class Circle {
     this.x = x;
     this.y = y;
     this.size = 0;
-    this.color = 'red';
+    this.maxSize = 10;
+    this.color = {
+      hue: 345 + Math.random() * 30,
+      saturation: 30,
+      lightness: 50,
+    };
     this.outlineColor = 'white';
     this.outlineThickness = 1.03;
+  }
+
+  createHSL(hue, saturation, lightness) {
+    return `hsl(${hue % 360},${saturation}%,${lightness}%)`;
   }
 
   drawCircle(x, y, radius, color) {
@@ -114,11 +123,22 @@ class Circle {
       this.outlineColor
     );
 
-    this.drawCircle(this.x, this.y, this.size, this.color);
+    this.drawCircle(
+      this.x,
+      this.y,
+      this.size,
+      this.createHSL(
+        this.color.hue,
+        this.color.saturation +
+          this.size * ((100 - this.color.saturation) / this.maxSize),
+        this.color.lightness
+      )
+    );
   }
 
   update(delta) {
-    if (this.size < 20) this.size = Math.min(this.size + delta * 0.0025, 20);
+    if (this.size < this.maxSize)
+      this.size = Math.min(this.size + delta * 0.0025, this.maxSize);
   }
 }
 
