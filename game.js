@@ -9,25 +9,34 @@ class Game {
     window.addEventListener('resize', () => this.resizeCanvas(), false);
     this.resizeCanvas();
 
-    this.circles = [];
-
-    this.cps = 1;
-    this.timeSinceLastCircleSpawn = 0;
-
     window.requestAnimationFrame((t) => this.gameLoop(t));
     this.lastFPSDrawingTimeStamp = 0;
     this.framesRenderedSinceLastFPSUpdate = 0;
     this.fps = 0;
 
-    this.gameOver = false;
-    this.score = 0;
-
     this.canvas.addEventListener('click', (event) => this.onClick(event));
+    window.addEventListener('keydown', (event) => this.onKeyDown(event));
+
+    this.menu = true;
+
+    this.initializeGame();
   }
 
   static getRandomPosition = () => {
     return Math.floor(Math.random() * 81) + 10;
   };
+
+  initializeGame() {
+    this.circles = [];
+
+    this.cps = 1;
+    this.timeSinceLastCircleSpawn = 0;
+
+    this.gameOver = false;
+    this.score = 0;
+
+    this.lastUpdateTime = undefined;
+  }
 
   resizeCanvas() {
     const windowHeight = window.innerHeight;
@@ -40,8 +49,22 @@ class Game {
       : windowWidth;
   }
 
+  onKeyDown(event) {
+    if (event.key == 'Escape' && !this.gameOver && !this.menu)
+      this.gameOver = true;
+
+    if (!(this.menu || this.gameOver)) return;
+
+    if (event.key != 'r') return;
+
+    this.initializeGame();
+    this.menu = false;
+  }
+
   onClick(event) {
-    if (this.gameOver) return;
+    if (this.menu || this.gameOver) {
+      return;
+    }
 
     const absoluteX =
       event.pageX - (this.canvas.offsetLeft + this.canvas.clientLeft);
@@ -100,16 +123,22 @@ class Game {
   }
 
   gameLoop(timeStamp) {
-    if (!this.gameOver) {
-      this.lastUpdateTime ??= timeStamp;
-      this.update(timeStamp - this.lastUpdateTime);
-      this.lastUpdateTime = timeStamp;
+    if (this.menu) {
+      this.drawOverlay();
+      this.drawMenu();
+    } else {
+      if (!this.gameOver) {
+        this.lastUpdateTime ??= timeStamp;
+        this.update(timeStamp - this.lastUpdateTime);
+        this.lastUpdateTime = timeStamp;
+      }
+      this.draw();
     }
 
-    this.draw();
-
     if (this.gameOver) {
+      this.drawOverlay();
       this.drawGameOver();
+      this.drawMenu();
     }
 
     this.drawScore();
@@ -134,12 +163,14 @@ class Game {
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('FPS: ' + this.fps, 10, 30);
   }
+
   drawScore() {
     this.ctx.font = '25px Arial';
     this.ctx.textAlign = 'left';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('Score: ' + this.score, 10, this.canvas.height - 15);
   }
+
   drawCPS() {
     this.ctx.font = '25px Arial';
     this.ctx.textAlign = 'left';
@@ -150,9 +181,8 @@ class Game {
       this.canvas.height - 45
     );
   }
+
   drawGameOver() {
-    this.ctx.fillStyle = 'rgba(0,0,0,0.9)';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.font = '50px Arial';
     this.ctx.textAlign = 'center';
     this.ctx.fillStyle = 'white';
@@ -160,6 +190,22 @@ class Game {
       'Game Over :(',
       this.canvas.width / 2,
       this.canvas.height / 2
+    );
+  }
+
+  drawOverlay() {
+    this.ctx.fillStyle = 'rgba(0,0,0,0.9)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  drawMenu() {
+    this.ctx.font = '30px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText(
+      'Press r start the Game',
+      this.canvas.width / 2,
+      this.canvas.height / 2 + 50
     );
   }
 }
