@@ -14,7 +14,7 @@ class Game {
     this.framesRenderedSinceLastFPSUpdate = 0;
     this.fps = 0;
 
-    this.canvas.addEventListener('click', (event) => this.onClick(event));
+    this.canvas.onmousedown = (event) => this.onClick(event);
     window.addEventListener('keydown', (event) => this.onKeyDown(event));
 
     this.menu = true;
