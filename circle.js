@@ -1,10 +1,11 @@
 export default class Circle {
-  constructor(ctx, x, y) {
+  constructor(ctx, x, y, gameOver) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
+    this.gameOver = gameOver;
     this.size = 0;
-    this.maxSize = 10;
+    this.maxSize = 7.5;
     const colorRange = 30;
     this.color = {
       hue: 360 - colorRange / 2 + Math.random() * colorRange,
@@ -54,8 +55,21 @@ export default class Circle {
     );
   }
 
+  inBounds(x, y) {
+    return (
+      Math.sqrt(
+        Math.pow(Math.abs(x - this.x), 2) + Math.pow(Math.abs(y - this.y), 2)
+      ) <= this.size
+    );
+  }
+
   update(delta) {
     if (this.size < this.maxSize)
       this.size = Math.min(this.size + delta * 0.0025, this.maxSize);
+    else {
+      this.color.hue = 180;
+      this.color.lightness = 35;
+      this.gameOver();
+    }
   }
 }
