@@ -1,3 +1,4 @@
+import Circle from './circle.js';
 class Game {
   constructor() {
     this.canvas = document.querySelector('#game-canvas');
@@ -78,67 +79,6 @@ class Game {
     this.ctx.font = '25px Arial';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('FPS: ' + this.fps, 10, 30);
-  }
-}
-
-class Circle {
-  constructor(ctx, x, y) {
-    this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.size = 0;
-    this.maxSize = 10;
-    this.color = {
-      hue: 345 + Math.random() * 30,
-      saturation: 30,
-      lightness: 50,
-    };
-    this.outlineColor = 'white';
-    this.outlineThickness = 1.03;
-  }
-
-  createHSL(hue, saturation, lightness) {
-    return `hsl(${hue % 360},${saturation}%,${lightness}%)`;
-  }
-
-  drawCircle(x, y, radius, color) {
-    this.ctx.beginPath();
-    this.ctx.arc(
-      x * (this.ctx.canvas.width / 100),
-      y * (this.ctx.canvas.height / 100),
-      radius *
-        (Math.sqrt(this.ctx.canvas.width * this.ctx.canvas.height) / 100),
-      0,
-      2 * Math.PI
-    );
-    this.ctx.fillStyle = color;
-    this.ctx.fill();
-  }
-
-  draw() {
-    this.drawCircle(
-      this.x,
-      this.y,
-      this.size * this.outlineThickness,
-      this.outlineColor
-    );
-
-    this.drawCircle(
-      this.x,
-      this.y,
-      this.size,
-      this.createHSL(
-        this.color.hue,
-        this.color.saturation +
-          this.size * ((100 - this.color.saturation) / this.maxSize),
-        this.color.lightness
-      )
-    );
-  }
-
-  update(delta) {
-    if (this.size < this.maxSize)
-      this.size = Math.min(this.size + delta * 0.0025, this.maxSize);
   }
 }
 
