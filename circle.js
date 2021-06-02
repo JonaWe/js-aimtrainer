@@ -59,7 +59,8 @@ export default class Circle {
     return (
       Math.sqrt(
         Math.pow(Math.abs(x - this.x), 2) + Math.pow(Math.abs(y - this.y), 2)
-      ) <= this.size
+      ) <=
+      this.size * this.outlineThickness
     );
   }
 

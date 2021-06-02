@@ -56,7 +56,6 @@ class Game {
       let circle = this.circles[i];
       if (circle.inBounds(x, y)) {
         circleToRemove = i;
-        console.log('hit');
         this.score++;
         break;
       }
@@ -91,6 +90,7 @@ class Game {
       );
       this.timeSinceLastCircleSpawn -= (1 / this.cps) * 1000;
     }
+    this.cps = Math.min(3, this.cps + delta * 0.00005);
 
     this.circles.forEach((circle) => {
       circle.update(delta);
@@ -107,6 +107,7 @@ class Game {
     this.draw();
     this.drawFPS(timeStamp);
     this.drawScore();
+    this.drawCPS();
     window.requestAnimationFrame((t) => this.gameLoop(t));
   }
 
@@ -129,6 +130,15 @@ class Game {
     this.ctx.font = '25px Arial';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('Score: ' + this.score, 10, this.canvas.height - 15);
+  }
+  drawCPS() {
+    this.ctx.font = '25px Arial';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText(
+      'CPS: ' + this.cps.toFixed(2),
+      10,
+      this.canvas.height - 45
+    );
   }
 }
 
