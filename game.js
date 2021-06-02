@@ -105,9 +105,14 @@ class Game {
     }
 
     this.draw();
-    this.drawFPS(timeStamp);
+
+    if (this.gameOver) {
+      this.drawGameOver();
+    }
+
     this.drawScore();
     this.drawCPS();
+    this.drawFPS(timeStamp);
     window.requestAnimationFrame((t) => this.gameLoop(t));
   }
 
@@ -123,21 +128,36 @@ class Game {
       this.framesRenderedSinceLastFPSUpdate = 0;
     }
     this.ctx.font = '25px Arial';
+    this.ctx.textAlign = 'left';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('FPS: ' + this.fps, 10, 30);
   }
   drawScore() {
     this.ctx.font = '25px Arial';
+    this.ctx.textAlign = 'left';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText('Score: ' + this.score, 10, this.canvas.height - 15);
   }
   drawCPS() {
     this.ctx.font = '25px Arial';
+    this.ctx.textAlign = 'left';
     this.ctx.fillStyle = 'white';
     this.ctx.fillText(
       'CPS: ' + this.cps.toFixed(2),
       10,
       this.canvas.height - 45
+    );
+  }
+  drawGameOver() {
+    this.ctx.fillStyle = 'rgba(0,0,0,0.9)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.font = '50px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText(
+      'Game Over :(',
+      this.canvas.width / 2,
+      this.canvas.height / 2
     );
   }
 }
