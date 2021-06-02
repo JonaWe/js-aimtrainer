@@ -8,12 +8,20 @@ class Game {
     window.addEventListener('resize', () => this.resizeCanvas(), false);
     this.resizeCanvas();
 
-    this.circle = new Circle(this.ctx, 50, 50);
+    this.circles = [];
+    const getRandomPosition = () => {
+      return Math.floor(Math.random() * 81) + 10;
+    };
+
+    for (let i = 0; i < 10; i++) {
+      this.circles.push(
+        new Circle(this.ctx, getRandomPosition(), getRandomPosition())
+      );
+    }
 
     window.requestAnimationFrame((t) => this.gameLoop(t));
     this.lastFPSDrawingTimeStamp = 0;
     this.framesRenderedSinceLastFPSUpdate = 0;
-    this.lastUpdateTime = undefined;
     this.fps = 0;
   }
 
@@ -35,11 +43,15 @@ class Game {
 
   draw() {
     this.drawBG();
-    this.circle.draw();
+    this.circles.forEach((circle) => {
+      circle.draw();
+    });
   }
 
   update(delta) {
-    this.circle.update(delta);
+    this.circles.forEach((circle) => {
+      circle.update(delta);
+    });
   }
 
   gameLoop(timeStamp) {
@@ -76,24 +88,37 @@ class Circle {
     this.y = y;
     this.size = 0;
     this.color = 'red';
+    this.outlineColor = 'white';
+    this.outlineThickness = 1.03;
   }
 
-  draw() {
+  drawCircle(x, y, radius, color) {
     this.ctx.beginPath();
     this.ctx.arc(
-      this.x * (this.ctx.canvas.width / 100),
-      this.y * (this.ctx.canvas.height / 100),
-      this.size *
+      x * (this.ctx.canvas.width / 100),
+      y * (this.ctx.canvas.height / 100),
+      radius *
         (Math.sqrt(this.ctx.canvas.width * this.ctx.canvas.height) / 100),
       0,
       2 * Math.PI
     );
-    this.ctx.fillStyle = this.color;
+    this.ctx.fillStyle = color;
     this.ctx.fill();
   }
 
+  draw() {
+    this.drawCircle(
+      this.x,
+      this.y,
+      this.size * this.outlineThickness,
+      this.outlineColor
+    );
+
+    this.drawCircle(this.x, this.y, this.size, this.color);
+  }
+
   update(delta) {
-    if (this.size < 20) this.size = Math.min(this.size + delta * 0.005, 20);
+    if (this.size < 20) this.size = Math.min(this.size + delta * 0.0025, 20);
   }
 }
 
